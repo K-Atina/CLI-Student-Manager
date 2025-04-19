@@ -213,7 +213,7 @@ def main():
         elif choice == "5":
             exit_program()
             
-        elif choice == "6"
+        elif choice == "6":
             save_students_to_file(students)
             exit_program
         
