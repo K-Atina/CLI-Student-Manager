@@ -1,0 +1,8 @@
+[
+    {
+        "type": "Student",
+        "name": "Jane Doe",
+        "student_id": 123456,
+        "mark": 80
+    }
+]
