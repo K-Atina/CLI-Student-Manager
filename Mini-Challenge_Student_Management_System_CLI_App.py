@@ -1,5 +1,12 @@
 import sys
 import time
+import json
+
+def save_students_to_file(students, filename="students.json"):
+    with open(filename, "w") as file:
+        data = [student.to_dict() for student in students]
+        json.dump(data, file, indent=4)
+
 
 
 class Student:
@@ -24,7 +31,14 @@ class Student:
         passing = self.__mark >= 50
         print("PASS!" if passing else "FAIL!")
         return passing
-
+    
+    def to_dict(self):
+        return {
+            "type": "Student",
+            "name": self.name,
+            "student_id": self.student_id,
+            "mark": self.get_mark()
+        }
 
 class ScholarshipStudent(Student):
     def __init__(self, name, student_id, mark, scholarship_amount):
@@ -43,12 +57,37 @@ class ScholarshipStudent(Student):
         super().introduce()
         print(f"Scholarship Amount: ${self.__scholarship_amount}")
 
+    def to_dict(self):
+        return {
+            "type": "ScholarshipStudent",
+            "name": self.name,
+            "student_id": self.student_id,
+            "mark": self.get_mark(),
+            "scholarship_amount": self.get_scholarship_amount()
+        }
+        
+def load_students_from_file(filename="students.json"):
+    try:
+        with open(filename, "r") as file:
+            data = json.load(file)
+            students = []
+            for item in data:
+                if item["type"] == "Student":
+                    students.append(Student(item["name"], item["student_id"], item["mark"]))
+                elif item["type"] == "ScholarshipStudent":
+                    students.append(ScholarshipStudent(item["name"], item["student_id"], item["mark"], item["scholarship_amount"]))
+            return students
+    except FileNotFoundError:
+        return []
+
+    
 def type_out(text, delay=0.05):
     for char in text:
         sys.stdout.write(char)
         sys.stdout.flush()
         time.sleep(delay)
     print() 
+
 
 def exit_program():
     time.sleep(1)
@@ -58,12 +97,11 @@ def exit_program():
     sys.exit()
 
 def main():
+    students = load_students_from_file()
+
     type_out("\nWelcome to student manager!")
     time.sleep(1)
-    
-  
-    students = []
-    
+
     while True:
         type_out("\n===== MENU =====")
         time.sleep(0.5)
@@ -76,6 +114,8 @@ def main():
         type_out("4. Update Student Grade")
         time.sleep(0.5)
         type_out("5. Exit")
+        time.sleep(0.5)
+        type_out("6. Save & Exit")
         time.sleep(0.5)
         
         type_out("Enter your choice: ")
@@ -100,6 +140,7 @@ def main():
                 new_student = Student(name, student_id, mark)
                 students.append(new_student)
                 print("\nStudent added successfully!")
+                save_students_to_file(students)
                 new_student.introduce()
                 new_student.is_passing()
                 
@@ -125,6 +166,7 @@ def main():
                 new_student = ScholarshipStudent(name, student_id, mark, scholarship_amount)
                 students.append(new_student)
                 print("\nScholarship Student added successfully!")
+                save_students_to_file(students)
                 new_student.introduce()
                 new_student.is_passing()
                 
@@ -157,6 +199,7 @@ def main():
                         new_mark = int(input("Enter new grade: "))
                         student.set_mark(new_mark)
                         print("Grade updated successfully!")
+                        save_students_to_file(students)
                         student.introduce()
                         student.is_passing()
                         break
@@ -169,6 +212,10 @@ def main():
         
         elif choice == "5":
             exit_program()
+            
+        elif choice == "6"
+            save_students_to_file(students)
+            exit_program
         
         else:
             print("Invalid option. Please try again.")
