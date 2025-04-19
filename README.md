@@ -14,6 +14,7 @@ A command-line student management system built with Python.
 - List all students with details
 - Smooth typewriter effect on startup
 - Graceful program exit
+-Data Retention (Data is saved in a JSON file)
 
 ---
 
